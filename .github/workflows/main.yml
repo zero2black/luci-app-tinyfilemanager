@@ -5,6 +5,27 @@ name: Build
 #    tags:
 #      - v3.**
 
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      # namapaket1:
+    #    description: "namapaket1"
+     #   required: false
+    #    default: "luci-app-"
+    #    type: text
+      namapaket:
+        description: "namapaket"
+        required: false
+        default: "luci-app-netmonitor"
+        type: choice
+        options:
+          - luci-app-tinyfilemanager
+          - luci-app-netmonitor
+          - luci-app-adguardhome
+          - autocore
+          - autocore-x86
+
 jobs:
   build:
     name: Build ${{ matrix.arch }}-${{ matrix.sdk }}
