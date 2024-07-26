@@ -26,16 +26,17 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y build-essential libncurses5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
 
+    - name: Copy luci-app-tinyfilemanager source
+      run: |
+        mkdir -p openwrt-sdk/package/luci-app-tinyfilemanager
+        cp -r ./luci-app-tinyfilemanager/* openwrt-sdk/package/luci-app-tinyfilemanager/
+
     - name: Configure and build package
       run: |
         cd openwrt-sdk
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        cd package
-        mkdir -p luci-app-tinyfilemanager
-        cp -r ../../luci-app-tinyfilemanager/* luci-app-tinyfilemanager/
-        cd ..
-        make menuconfig # Optionally configure your package
+        make defconfig  # Predefined configurations, if available
         make package/luci-app-tinyfilemanager/compile V=s
 
     - name: Upload IPK package
