@@ -1,0 +1,44 @@
+name: Build OpenWrt IPK
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v2
+
+    - name: Set up OpenWrt SDK
+      run: |
+        wget https://downloads.openwrt.org/releases/21.02.3/targets/x86/64/openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        tar -xf openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        mv openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64 openwrt-sdk
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y build-essential libncurses5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
+
+    - name: Configure and build package
+      run: |
+        cd openwrt-sdk
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+        cd package
+        mkdir -p luci-app-tinyfilemanager
+        cp -r ../../luci-app-tinyfilemanager/* luci-app-tinyfilemanager/
+        cd ..
+        make menuconfig # Optionally configure your package
+        make package/luci-app-tinyfilemanager/compile V=s
+
+    - name: Upload IPK package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ipk-package
+        path: openwrt-sdk/bin/packages/x86_64/luci-app-tinyfilemanager*.ipk
