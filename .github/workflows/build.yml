@@ -9,6 +9,7 @@ on:
     branches:
       - main
       
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,7 +28,6 @@ jobs:
         wget https://downloads.openwrt.org/releases/21.02.3/targets/x86/64/openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
         tar -xJf openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
         mv openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64 openwrt-sdk
-        cd openwrt-sdk
 
     - name: Update and install feeds
       run: |
@@ -38,25 +38,24 @@ jobs:
     - name: Clone luci-app-tinyfilemanager
       run: |
         cd openwrt-sdk/package
-        git clone --depth 1 --branch master --single-branch --no-checkout https://github.com/muink/luci-app-tinyfilemanager.git luci-app-tinyfilemanager
-        cd luci-app-tinyfilemanager
-        git checkout .
-      
+        git clone --depth 1 --branch master https://github.com/muink/luci-app-tinyfilemanager.git luci-app-tinyfilemanager
+
     - name: Configure build
       run: |
         cd openwrt-sdk
         make defconfig
-        make menuconfig
-        
+        # Select the package LuCI -> Applications -> luci-app-tinyfilemanager
+        echo "CONFIG_PACKAGE_luci-app-tinyfilemanager=y" >> .config
+        make defconfig
+
     - name: Compile luci-app-tinyfilemanager
       run: |
         cd openwrt-sdk
         make package/luci-app-tinyfilemanager/compile V=99
-        
+
     - name: Upload IPK package
       uses: actions/upload-artifact@v2
       with:
         name: luci-app-tinyfilemanager
         path: |
           openwrt-sdk/bin/packages/x86_64/luci-app-tinyfilemanager_*.ipk
-          
