@@ -1,14 +1,14 @@
-name: Build OpenWrt IPK
+
+name: Build IPK for OpenWrt
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
-      
+      - master
 
 jobs:
   build:
@@ -53,9 +53,14 @@ jobs:
         cd openwrt-sdk
         make package/luci-app-tinyfilemanager/compile V=99
 
+    - name: List compiled files
+      run: |
+        cd openwrt-sdk
+        find bin -name "*.ipk"
+
     - name: Upload IPK package
       uses: actions/upload-artifact@v2
       with:
         name: luci-app-tinyfilemanager
         path: |
-          openwrt-sdk/bin/packages/x86_64/luci-app-tinyfilemanager_*.ipk
+          openwrt-sdk/bin/packages/**/luci-app-tinyfilemanager_*.ipk
