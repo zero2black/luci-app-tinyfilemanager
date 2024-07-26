@@ -1,6 +1,7 @@
 name: Build OpenWrt IPK
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
