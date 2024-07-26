@@ -8,39 +8,55 @@ on:
   pull_request:
     branches:
       - main
-
+      
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout source code
+    - name: Checkout the repository
       uses: actions/checkout@v2
+      
+    - name: Set up environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libncurses5-dev zlib1g-dev gawk git ccache gettext libssl-dev xsltproc wget unzip python
 
-    - name: Set up OpenWrt SDK
+    - name: Download OpenWrt SDK
       run: |
         wget https://downloads.openwrt.org/releases/21.02.3/targets/x86/64/openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
-        tar -xf openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        tar -xJf openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
         mv openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64 openwrt-sdk
+        cd openwrt-sdk
 
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y build-essential libncurses5-dev zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
-
-    - name: Copy luci-app-tinyfilemanager source
-      run: |
-        mkdir -p openwrt-sdk/package/luci-app-tinyfilemanager
-        cp -r ./luci-app-tinyfilemanager/* openwrt-sdk/package/luci-app-tinyfilemanager/
-
-    - name: Configure and build package
+    - name: Update and install feeds
       run: |
         cd openwrt-sdk
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        make defconfig  # Predefined configurations, if available
-        make package/luci-app-tinyfilemanager/compile V=s
 
+    - name: Clone luci-app-tinyfilemanager
+      run: |
+        cd openwrt-sdk/package
+        git clone --depth 1 --branch master --single-branch --no-checkout https://github.com/muink/luci-app-tinyfilemanager.git luci-app-tinyfilemanager
+        cd luci-app-tinyfilemanager
+        git checkout .
+      
+    - name: Configure build
+      run: |
+        cd openwrt-sdk
+        make defconfig
+        make menuconfig
+        
+    - name: Compile luci-app-tinyfilemanager
+      run: |
+        cd openwrt-sdk
+        make package/luci-app-tinyfilemanager/compile V=99
+        
     - name: Upload IPK package
       uses: actions/upload-artifact@v2
       with:
-        name: ipk-package
-        path: openwrt-sdk/bin/packages/x86_64/luci-app-tinyfilemanager*.ipk
+        name: luci-app-tinyfilemanager
+        path: |
+          openwrt-sdk/bin/packages/x86_64/luci-app-tinyfilemanager_*.ipk
+          
