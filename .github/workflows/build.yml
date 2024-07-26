@@ -38,7 +38,7 @@ jobs:
     - name: Clone luci-app-tinyfilemanager
       run: |
         cd openwrt-sdk/package
-        git clone --depth 1 --branch master https://github.com/muink/luci-app-tinyfilemanager.git luci-app-tinyfilemanager
+        git clone --depth 1 --branch master https://github.com/zero2black/luci-app-tinyfilemanager.git luci-app-tinyfilemanager
 
     - name: Configure build
       run: |
