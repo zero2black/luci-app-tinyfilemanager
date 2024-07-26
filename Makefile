@@ -33,8 +33,8 @@ sed -Ei "s|^(post_max_size) *=.*$$|\1 = $$total_size_limit|; \
          s|^(max_file_uploads) *=.*$$|\1 = $$otime_uploads_limit|" \
 "$${IPKG_INSTROOT}/etc/php.ini"
 # unpack
-tar -C "$${IPKG_INSTROOT}/www/tinyfilemanager" -xzf "$${IPKG_INSTROOT}/www/tinyfilemanager/index.tgz"
-rm -f "$${IPKG_INSTROOT}/www/tinyfilemanager/index.tgz"
+# tar -C "$${IPKG_INSTROOT}/www/tinyfilemanager" -xzf "$${IPKG_INSTROOT}/www/tinyfilemanager/index.tgz"
+# rm -f "$${IPKG_INSTROOT}/www/tinyfilemanager/index.tgz"
 endef
 
 define Package/$(LUCI_NAME)/prerm
