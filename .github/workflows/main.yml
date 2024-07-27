@@ -1,4 +1,4 @@
-name: Build IPK for OpenWrt2
+name: Build IPK for OpenWrt3
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Checkout the repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       
     - name: Set up environment
       run: |
@@ -18,9 +18,9 @@ jobs:
 
     - name: Download OpenWrt SDK
       run: |
-        wget https://downloads.openwrt.org/releases/23.05.4/targets/x86/64/openwrt-sdk-23.05.4-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz
-        tar -xJf openwrt-sdk-23.05.4-x86-64_gcc-12.3.0_musl.Linux-x86_64.tar.xz
-        mv openwrt-sdk-23.05.4-x86-64_gcc-12.3.0_musl.Linux-x86_64 openwrt-sdk
+        wget https://downloads.openwrt.org/releases/21.02.3/targets/x86/64/openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        tar -xJf openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        mv openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64 openwrt-sdk
 
     - name: Update and install feeds
       run: |
@@ -37,6 +37,7 @@ jobs:
       run: |
         cd openwrt-sdk
         make defconfig
+        # Select the package LuCI -> Applications -> luci-app-tinyfilemanager
         echo "CONFIG_PACKAGE_luci-app-tinyfilemanager=y" >> .config
         make defconfig
 
@@ -50,15 +51,9 @@ jobs:
         cd openwrt-sdk
         find bin -name "*.ipk"
 
-    - name: Zip the IPK package
-      run: |
-        cd openwrt-sdk/bin/packages
-        ls
-        zip luci-app-tinyfilemanager.zip $(find . -name "luci-app-tinyfilemanager_*.ipk")
-
     - name: Upload IPK package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: luci-app-tinyfilemanager
         path: |
-          openwrt-sdk/bin/packages/luci-app-tinyfilemanager.zip
+          openwrt-sdk/bin/packages/**/luci-app-tinyfilemanager_*.ipk
