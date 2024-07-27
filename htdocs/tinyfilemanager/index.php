@@ -1,17 +1,16 @@
 <?php
 //Default Configuration
-$CONFIG = '{"lang":"en","error_reporting":false,"show_hidden":true,"hide_Cols":false,"theme":"dark"}';
+$CONFIG = '{"lang":"en","error_reporting":false,"show_hidden":false,"hide_Cols":false,"theme":"light"}';
 
 /**
  * H3K | Tiny File Manager V2.5.3
  * @author CCP Programmers
- * @email ccpprogrammers@gmail.com
  * @github https://github.com/prasathmani/tinyfilemanager
  * @link https://tinyfilemanager.github.io
  */
 
 //TFM version
-define('VERSION', '2.5.3_8e87afa');
+define('VERSION', '2.5.3');
 
 //Application Title
 define('APP_TITLE', 'Tiny File Manager');
@@ -151,16 +150,16 @@ if (is_readable($config_file)) {
 
 // External CDN resources that can be used in the HTML (replace for GDPR compliance)
 $external = array(
-    'css-bootstrap' => '<link href="assets/css/bootstrap.min.css" rel="stylesheet">',
-    'css-dropzone' => '<link href="assets/css/dropzone.min.css" rel="stylesheet">',
-    'css-font-awesome' => '<link rel="stylesheet" href="assets/css/font-awesome.min.css" crossorigin="anonymous">',
-    'css-highlightjs' => '<link rel="stylesheet" href="assets/css/' . $highlightjs_style . '.min.css">',
-    'js-ace' => '<script src="assets/js/ace.js"></script>',
-    'js-bootstrap' => '<script src="assets/js/bootstrap.bundle.min.js"></script>',
-    'js-dropzone' => '<script src="assets/js/dropzone.min.js"></script>',
-    'js-jquery' => '<script src="assets/js/jquery-3.7.1.min.js"></script>',
-    'js-jquery-datatables' => '<script src="assets/js/jquery.dataTables.min.js"></script>',
-    'js-highlightjs' => '<script src="assets/js/highlight.min.js"></script>',
+    'css-bootstrap' => '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">',
+    'css-dropzone' => '<link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css" rel="stylesheet">',
+    'css-font-awesome' => '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous">',
+    'css-highlightjs' => '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/' . $highlightjs_style . '.min.css">',
+    'js-ace' => '<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.13.1/ace.js"></script>',
+    'js-bootstrap' => '<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>',
+    'js-dropzone' => '<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>',
+    'js-jquery' => '<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>',
+    'js-jquery-datatables' => '<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js" crossorigin="anonymous" defer></script>',
+    'js-highlightjs' => '<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js"></script>',
     'pre-jsdelivr' => '<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin/><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"/>',
     'pre-cloudflare' => '<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin/><link rel="dns-prefetch" href="https://cdnjs.cloudflare.com"/>'
 );
@@ -608,7 +607,7 @@ if ((isset($_SESSION[FM_SESSION_ID]['logged'], $auth_users[$_SESSION[FM_SESSION_
         $use_curl = false;
         $temp_file = tempnam(sys_get_temp_dir(), "upload-");
         $fileinfo = new stdClass();
-        $fileinfo->name = trim(basename($url), ".\x00..\x20");
+        $fileinfo->name = trim(urldecode(basename($url)), ".\x00..\x20");
 
         $allowed = (FM_UPLOAD_EXTENSION) ? explode(',', FM_UPLOAD_EXTENSION) : false;
         $ext = strtolower(pathinfo($fileinfo->name, PATHINFO_EXTENSION));
@@ -958,7 +957,7 @@ if (!empty($_FILES) && !FM_READONLY) {
 
     $targetPath = $path . $ds;
     if ( is_writable($targetPath) ) {
-        $fullPath = $path . '/' . basename($fullPathInput);
+        $fullPath = $path . '/' . $fullPathInput;
         $folder = substr($fullPath, 0, strrpos($fullPath, "/"));
 
         if (!is_dir($folder)) {
@@ -1398,10 +1397,14 @@ if (isset($_GET['upload']) && !FM_READONLY) {
                         toast('Error: Server Timeout');
                     });
                 }).on("success", function (res) {
-                    let _response = JSON.parse(res.xhr.response);
+                    try {
+                        let _response = JSON.parse(res.xhr.response);
 
-                    if(_response.status == "error") {
-                        toast(_response.info);
+                        if(_response.status == "error") {
+                            toast(_response.info);
+                        }
+                    } catch (e) {
+                        toast("Error: Invalid JSON response");
                     }
                 }).on("error", function(file, response) {
                     toast(response);
@@ -1647,7 +1650,7 @@ if (isset($_GET['view'])) {
     $file = $_GET['view'];
     $file = fm_clean_path($file, false);
     $file = str_replace('/', '', $file);
-    if ($file == '' || !is_file($path . '/' . $file) || in_array($file, $GLOBALS['exclude_items'])) {
+    if ($file == '' || !is_file($path . '/' . $file) || !fm_is_exclude_items($file)) {
         fm_set_msg(lng('File not found'), 'error');
         $FM_PATH=FM_PATH; fm_redirect(FM_SELF_URL . '?p=' . urlencode($FM_PATH));
     }
@@ -1846,7 +1849,7 @@ if (isset($_GET['edit']) && !FM_READONLY) {
     $file = $_GET['edit'];
     $file = fm_clean_path($file, false);
     $file = str_replace('/', '', $file);
-    if ($file == '' || !is_file($path . '/' . $file) || in_array($file, $GLOBALS['exclude_items'])) {
+    if ($file == '' || !is_file($path . '/' . $file) || !fm_is_exclude_items($file)) {
         fm_set_msg(lng('File not found'), 'error');
         $FM_PATH=FM_PATH; fm_redirect(FM_SELF_URL . '?p=' . urlencode($FM_PATH));
     }
@@ -2877,12 +2880,18 @@ function fm_get_file_icon_class($path)
             $img = 'fa fa-css3';
             break;
         case 'bz2':
+        case 'tbz2':
+        case 'tbz':
         case 'zip':
         case 'rar':
         case 'gz':
+        case 'tgz':
         case 'tar':
         case '7z':
         case 'xz':
+        case 'txz':
+        case 'zst':
+        case 'tzst':
             $img = 'fa fa-file-archive-o';
             break;
         case 'php':
@@ -4180,7 +4189,7 @@ $isStickyNavBar = $sticky_navbar ? 'navbar-fixed' : 'navbar-normal';
             if(_data && _data.fontSize) { $fontSizeEl.html(optionNode("", _data.fontSize)); }
             $modeEl.val( editor.getSession().$modeId );
             $themeEl.val( editor.getTheme() );
-            $fontSizeEl.val(12).change(); //set default font size in drop down
+            $(function() { $fontSizeEl.val(12).change(); }); //set default font size in drop down
         }
 
         $(function(){
@@ -4287,6 +4296,8 @@ function lng($txt) {
     $tr['en']['Invalid characters in file or folder name']      = 'Invalid characters in file or folder name';
     $tr['en']['Operations with archives are not available']     = 'Operations with archives are not available';
     $tr['en']['File or folder with this path already exists']   = 'File or folder with this path already exists';
+    $tr['en']['Are you sure want to rename?']                   = 'Are you sure want to rename?';
+    $tr['en']['Are you sure want to']                           = 'Are you sure want to';
 
     $i18n = fm_get_translations($tr);
     $tr = $i18n ? $i18n : $tr;
