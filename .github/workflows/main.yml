@@ -1,72 +1,73 @@
-name: Build
-
-# on:
-#  push:
-#    tags:
-#      - v3.**
+name: Build IPK for OpenWrt2
 
 on:
-  repository_dispatch:
   workflow_dispatch:
-    inputs:
-      # namapaket1:
-    #    description: "namapaket1"
-     #   required: false
-    #    default: "luci-app-"
-    #    type: text
-      namapaket:
-        description: "namapaket"
-        required: false
-        default: "luci-app-netmonitor"
-        type: choice
-        options:
-          - luci-app-tinyfilemanager
-          - luci-app-netmonitor
-          - luci-app-adguardhome
-          - autocore
-          - autocore-x86
-
+  
 jobs:
   build:
-    name: Build ${{ matrix.arch }}-${{ matrix.sdk }}
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        arch:
-          - x86_64
-        sdk:
-          - openwrt-21.02
-          - openwrt-22.03
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Checkout the repository
+      uses: actions/checkout@v2
+      
+    - name: Set up environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libncurses5-dev zlib1g-dev gawk git ccache gettext libssl-dev xsltproc wget unzip python3
 
-      - name: Build
-        uses: sbwml/openwrt-gh-action-sdk@go1.22
-        env:
-          ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
-          FEEDNAME: packages_ci
-          PACKAGES: luci-app-tinyfilemanager
-          NO_REFRESH_CHECK: true
+    - name: Download OpenWrt SDK
+      run: |
+        wget https://downloads.openwrt.org/releases/21.02.3/targets/x86/64/openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        tar -xJf openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64.tar.xz
+        mv openwrt-sdk-21.02.3-x86-64_gcc-8.4.0_musl.Linux-x86_64 openwrt-sdk
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.arch }}-${{ matrix.sdk }}
-          path: bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
+    - name: Update and install feeds
+      run: |
+        cd openwrt-sdk
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
 
-      - name: Create compress files
-        run: |
-          tar -zcvf ${{ matrix.sdk }}-${{ matrix.arch }}.tar.gz -C bin/packages/${{ matrix.arch }}/ packages_ci
+    - name: Clone luci-app-tinyfilemanager
+      run: |
+        cd openwrt-sdk/package
+        git clone --depth 1 --branch master https://github.com/zero2black/luci-app-tinyfilemanager.git luci-app-tinyfilemanager
 
-      - name: Upload packages
-        uses: ncipollo/release-action@v1
-        with:
-          name: ${{ github.ref_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          replacesArtifacts: true
-          artifacts: "${{ matrix.sdk }}-${{ matrix.arch }}.tar.gz"
+    - name: Configure build
+      run: |
+        cd openwrt-sdk
+        make defconfig
+        # Select the package LuCI -> Applications -> luci-app-tinyfilemanager
+        echo "CONFIG_PACKAGE_luci-app-tinyfilemanager=y" >> .config
+        make defconfig
+
+    - name: Compile luci-app-tinyfilemanager
+      run: |
+        cd openwrt-sdk
+        make package/luci-app-tinyfilemanager/compile V=99
+
+    - name: List compiled files
+      run: |
+        cd openwrt-sdk
+        find bin -name "*.ipk"
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release ${{ github.run_number }}
+        draft: false
+        prerelease: false
+
+    - name: Upload IPK package to Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: openwrt-sdk/bin/packages/**/luci-app-tinyfilemanager_*.ipk
+        asset_name: luci-app-tinyfilemanager.ipk
+        asset_content_type: application/octet-stream
