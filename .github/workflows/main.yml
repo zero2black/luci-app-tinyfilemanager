@@ -71,7 +71,7 @@ jobs:
       uses: ncipollo/release-action@main
       with:
         token: ${{ secrets.REALESES_TOKEN }}
-        artifacts: "bin/packages/${{ matrix.arch }}/packages_ci/*.ipk"
+        artifacts: "openwrt-sdk/bin/packages/**/luci-app-tinyfilemanager_*.ipk"
         #artifacts: "${{ matrix.arch }}-${{ matrix.sdk }}.zip,bin/packages/${{ matrix.arch }}/packages_ci/*.ipk"
         allowUpdates: true
         replacesArtifacts: true
