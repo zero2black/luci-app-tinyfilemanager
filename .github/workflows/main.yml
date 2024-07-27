@@ -63,7 +63,7 @@ jobs:
         echo -e "testing" >> release.txt
 
     - name: Upload packages
-      uses: ncipollo/release-action@v1
+      uses: ncipollo/release-action@main
       with:
         token: ${{ secrets.RELEASES_TOKEN }}
         artifacts: "openwrt-sdk/bin/packages/**/luci-app-tinyfilemanager_*.ipk"
