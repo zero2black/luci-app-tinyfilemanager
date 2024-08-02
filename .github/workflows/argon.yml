@@ -31,7 +31,7 @@ jobs:
     - name: Clone luci-theme-argon
       run: |
         cd openwrt-sdk/package
-        git clone --depth 1 --branch master https://github.com/sbwml/luci-theme-argon.git luci-theme-argon
+        git clone --depth 1 --branch main https://github.com/sbwml/luci-theme-argon.git luci-theme-argon
 
     - name: Configure build
       run: |
