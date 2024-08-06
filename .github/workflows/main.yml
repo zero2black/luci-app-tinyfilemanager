@@ -1,4 +1,4 @@
-name: Build IPK2
+name: Build IPK2 tiny
 
 on:
   workflow_dispatch:
