@@ -17,6 +17,7 @@ jobs:
 
     - name: Modify tinyfilemanager.php
       run: |
+        # Update external links
         sed -i "s|<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi\" crossorigin=\"anonymous\">|<link href=\"assets/css/bootstrap.min.css\" rel=\"stylesheet\">|" tinyfilemanager.php
         sed -i "s|<link href=\"https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css\" rel=\"stylesheet\">|<link href=\"assets/css/dropzone.min.css\" rel=\"stylesheet\">|" tinyfilemanager.php
         sed -i "s|<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css\" crossorigin=\"anonymous\">|<link rel=\"stylesheet\" href=\"assets/css/font-awesome.min.css\" crossorigin=\"anonymous\">|" tinyfilemanager.php
@@ -28,11 +29,20 @@ jobs:
         sed -i "s|<script src=\"https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js\" crossorigin=\"anonymous\" defer></script>|<script src=\"assets/js/jquery.dataTables.min.js\"></script>|" tinyfilemanager.php
         sed -i "s|<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js\"></script>|<script src=\"assets/js/highlight.min.js\"></script>|" tinyfilemanager.php
 
+        # Replace VERSION definition
+        sed -i "s|define('VERSION', '2.5.3');|define('VERSION', '2.5.3-$(date +%Y%m%d)');|" tinyfilemanager.php
+
+        # Replace use_auth
+        sed -i "s|\$use_auth = true;|\$use_auth = false;|" tinyfilemanager.php
+
+        # Rename tinyfilemanager.php to index.php
+        mv tinyfilemanager.php index.php
+
     - name: Commit and push changes
       run: |
         git config --global user.name 'GitHub Actions'
         git config --global user.email 'actions@github.com'
-        git add tinyfilemanager.php
-        git commit -m 'Updated tinyfilemanager.php with new external links'
+        git add index.php
+        git add .github/workflows/update-file.yml
+        git commit -m 'Updated and renamed tinyfilemanager.php to index.php and modified use_auth setting'
         git push
-        
