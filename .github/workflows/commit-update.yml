@@ -18,16 +18,16 @@ jobs:
     - name: Modify tinyfilemanager.php
       run: |
         # Update external links
-        sed -i "s|<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi\" crossorigin=\"anonymous\">|<link href=\"assets/css/bootstrap.min.css\" rel=\"stylesheet\">|" tinyfilemanager.php
-        sed -i "s|<link href=\"https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css\" rel=\"stylesheet\">|<link href=\"assets/css/dropzone.min.css\" rel=\"stylesheet\">|" tinyfilemanager.php
-        sed -i "s|<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css\" crossorigin=\"anonymous\">|<link rel=\"stylesheet\" href=\"assets/css/font-awesome.min.css\" crossorigin=\"anonymous\">|" tinyfilemanager.php
-        sed -i "s|<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/' . \$highlightjs_style . '.min.css\">|<link rel=\"stylesheet\" href=\"assets/css/' . \$highlightjs_style . '.min.css\">|" tinyfilemanager.php
-        sed -i "s|<script src=\"https://cdnjs.cloudflare.com/ajax/libs/ace/1.13.1/ace.js\"></script>|<script src=\"assets/js/ace.js\"></script>|" tinyfilemanager.php
-        sed -i "s|<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3\" crossorigin=\"anonymous\"></script>|<script src=\"assets/js/bootstrap.bundle.min.js\"></script>|" tinyfilemanager.php
-        sed -i "s|<script src=\"https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js\"></script>|<script src=\"assets/js/dropzone.min.js\"></script>|" tinyfilemanager.php
-        sed -i "s|<script src=\"https://code.jquery.com/jquery-3.6.1.min.js\" integrity=\"sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=\" crossorigin=\"anonymous\"></script>|<script src=\"assets/js/jquery-3.7.1.min.js\"></script>|" tinyfilemanager.php
-        sed -i "s|<script src=\"https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js\" crossorigin=\"anonymous\" defer></script>|<script src=\"assets/js/jquery.dataTables.min.js\"></script>|" tinyfilemanager.php
-        sed -i "s|<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js\"></script>|<script src=\"assets/js/highlight.min.js\"></script>|" tinyfilemanager.php
+        sed -i "s|<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi\" crossorigin=\"anonymous\">|<link href=\"css/bootstrap.min.css\" rel=\"stylesheet\">|" tinyfilemanager.php
+        sed -i "s|<link href=\"https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css\" rel=\"stylesheet\">|<link href=\"css/dropzone.min.css\" rel=\"stylesheet\">|" tinyfilemanager.php
+        sed -i "s|<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css\" crossorigin=\"anonymous\">|<link rel=\"stylesheet\" href=\"css/font-awesome.min.css\" crossorigin=\"anonymous\">|" tinyfilemanager.php
+        sed -i "s|<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/' . \$highlightjs_style . '.min.css\">|<link rel=\"stylesheet\" href=\"css/' . \$highlightjs_style . '.min.css\">|" tinyfilemanager.php
+        sed -i "s|<script src=\"https://cdnjs.cloudflare.com/ajax/libs/ace/1.13.1/ace.js\"></script>|<script src=\"js/ace.js\"></script>|" tinyfilemanager.php
+        sed -i "s|<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js\" integrity=\"sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3\" crossorigin=\"anonymous\"></script>|<script src=\"js/bootstrap.bundle.min.js\"></script>|" tinyfilemanager.php
+        sed -i "s|<script src=\"https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js\"></script>|<script src=\"js/dropzone.min.js\"></script>|" tinyfilemanager.php
+        sed -i "s|<script src=\"https://code.jquery.com/jquery-3.6.1.min.js\" integrity=\"sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=\" crossorigin=\"anonymous\"></script>|<script src=\"js/jquery-3.7.1.min.js\"></script>|" tinyfilemanager.php
+        sed -i "s|<script src=\"https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js\" crossorigin=\"anonymous\" defer></script>|<script src=\"js/jquery.dataTables.min.js\"></script>|" tinyfilemanager.php
+        sed -i "s|<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/highlight.min.js\"></script>|<script src=\"js/highlight.min.js\"></script>|" tinyfilemanager.php
 
         # Replace VERSION definition
         sed -i "s|define('VERSION', '2.5.3');|define('VERSION', '2.5.3-$(date +%Y%m%d)');|" tinyfilemanager.php
