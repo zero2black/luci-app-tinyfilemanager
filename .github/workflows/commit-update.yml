@@ -42,6 +42,7 @@ jobs:
       run: |
         git config --global user.name 'GitHub Actions'
         git config --global user.email 'actions@github.com'
+        git status
         git add index.php
-        git commit -m 'Updated and renamed tinyfilemanager.php to index.php and modified use_auth setting'
-        git push
+        git commit -m 'Updated and renamed tinyfilemanager.php to index.php and modified use_auth setting' || echo "No changes to commit"
+        git push origin HEAD:master --force
