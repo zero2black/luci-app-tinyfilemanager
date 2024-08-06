@@ -1,7 +1,7 @@
 name: Update File
 
 on:
-  workflow_dispatch: # This allows you to manually trigger the workflow
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   update-file:
@@ -38,11 +38,14 @@ jobs:
         # Rename tinyfilemanager.php to index.php
         mv tinyfilemanager.php index.php
 
+        # Move index.php to htdocs/tinyfilemanager
+        mkdir -p htdocs/tinyfilemanager
+        mv index.php htdocs/tinyfilemanager/
+
     - name: Commit and push changes
       run: |
         git config --global user.name 'GitHub Actions'
         git config --global user.email 'actions@github.com'
-        git status
-        git add index.php
-        git commit -m 'Updated and renamed tinyfilemanager.php to index.php and modified use_auth setting' || echo "No changes to commit"
+        git add htdocs/tinyfilemanager/index.php
+        git commit -m 'Updated and moved tinyfilemanager.php to htdocs/tinyfilemanager/index.php'
         git push origin HEAD:master --force
