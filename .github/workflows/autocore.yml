@@ -56,7 +56,7 @@ jobs:
       with:
         name: autocore-arm
         path: |
-          openwrt-sdk/bin/packages/**/luci-theme-argon_*.ipk
+          openwrt-sdk/bin/packages/**/autocore*.ipk
 
     - name: Zip packages
       run: |
