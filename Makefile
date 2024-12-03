@@ -10,7 +10,7 @@ LUCI_DEPENDS:=+php8 +php8-cgi +php8-fastcgi +php8-fpm +php8-mod-session +php8-mo
 
 
 PKG_NAME:=luci-app-tinyfilemanager
-PKG_VERSION:=2.6.0
+PKG_VERSION:=2.6.1
 PKG_RELEASE:=1
 
 define Package/$(PKG_NAME)
